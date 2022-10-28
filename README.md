@@ -180,41 +180,46 @@ python detect.py --weights weights.pt --source 0
 ```
 
 ## <div align="center">Modifications to use Gsstreamer and WebSocket</div>
+<details>
+<summary>Transmit with Gstreamer from AGV to Yolov5</summary>
+
+To carry out the transmission of the stream from the AGV camera (Client I) to Yolov5 (Server I) is necessary the codes of the folder 'summit\_codes' where there are two files, 'vid\_tx.sh' and 'master\_edit.config' that are responsible for the transmission. In 'master\_edit.config the parameters are established and it will be necessary to indicate the 'IP' and the 'port' of the Server I. The code 'vid\_tx.sh' will will be in charge of making the transmission from the parameters of 'master\_edit.config'. In this code the parameters to transmit are set in:
+
+```bash
+IP_TX=10.236.24.39
+PORT_TX=8554
+```
+</details>
 
 <details>
-<summary>Receive with Gstreamer</summary>
+<summary>Receive with Gstreamer from AGV </summary>
 
 In order to (server) receive the streaming from the Robotnik Summit XL camera (Client I), it is necessary to modify the 'port' in the 'dataloaders.py' code through which it is transmitting the video.
 
 ```bash
-async def run(...):
+class LoadStreams:
+    def __init__():
     ...
-    #send the stream to the client
-    gst_str_rtp = " appsrc ! videoconvert ! videoscale ! video/x-raw,format=I420,width=1280,height=720,framerate=20/1 !  videoconvert !\
-         x264enc tune=zerolatency bitrate=3000 speed-preset=superfast ! rtph264pay ! \
-         udpsink host=10.236.42.82 port=8554"
-    fourcc = cv2.VideoWriter_fourcc(*'H264')
-    out_send = cv2.VideoWriter(gst_str_rtp,fourcc,20,(1280,720),  True)
-    
-    #send infor (text) to the terminal 
-    HOST_PORT = "ws://10.236.25.41:8000"
+       gstreamer_str = (f'udpsrc port={PORT_RX} auto-multicast=0 ! application/x-rtp, media=video, encoding-name=H264 !\
+            rtpjitterbuffer latency=300 ! rtph264depay ! decodebin ! videoconvert ! video/x-raw,format=BGR ! appsink drop=1')            
+       cap = cv2.VideoCapture(gstreamer_str, cv2.CAP_GSTREAMER)
     ...
 ```
 </details>
 
-
 <details>
-<summary>Transmit with Gstreamer</summary>
+<summary>Transmit with Gstreamer from Yolov5 to platform</summary>
 
 To be able to transmit the video output of the YOLOv5 algorithm, it is necessary to set the 'IP' and the 'port' in the 'detect.py' code:
 
 ```bash
 #Example to send the stream to the client II     
-    gst_str_rtp = " appsrc ! videoconvert ! videoscale ! video/x-raw,format=I420,width=1280,height=720,framerate=20/1 !  videoconvert !\
-         x264enc tune=zerolatency bitrate=3000 speed-preset=superfast ! rtph264pay ! \
-         udpsink host=10.236.42.82 port=8554"
+    #send the stream to the client via GStreamer
+    gst_str_rtp =(f'appsrc ! videoconvert ! videoscale ! video/x-raw,format=I420,width=1280,height=720,framerate=20/1 !  videoconvert !\
+         x264enc tune=zerolatency bitrate=3000 speed-preset=superfast ! rtph264pay !\
+         udpsink host= {IP_TX} port= {PORT_TX}')
     fourcc = cv2.VideoWriter_fourcc(*'H264')
-    out_send = cv2.VideoWriter(gst_str_rtp,fourcc,20,(1280,720),  True)
+    out_send = cv2.VideoWriter(gst_str_rtp, fourcc, 20, (1280, 720), True)
 ```
 </details>
 
@@ -225,36 +230,45 @@ To be able to transmit the video output of the YOLOv5 algorithm, it is necessary
 To be able to transmit the classes, weights, areas of the detected objects output of the YOLOv5 algorithm, it is necessary to set the 'IP' and the 'port' in the 'detect.py' code:
 
 ```bash
-#Example to send infor (text) to the external server terminal 
-    HOST_PORT = "ws://10.236.25.41:8000"
+#send infor (text) via WebSocket to the Servidor_Broadcast and then to the platform 
+    HOST_PORT = (f'ws://{IP_TX}:{PORT_SB}')
 ```
 </details>
-
 
 <details>
-<summary>Transmit infor to the platform</summary>
+<summary>Transmit messages from Server II to the platform</summary>
 
-In order to transmit the information from the server to the platform, it is necessary to establish the 'port' and the 'IP' through which the connection between the server and the external server will be established. Through this same 'port'', the transmission between the external server and the platform (client II) will be carried out.
+In order to transmit the information from the server to the platform, it is necessary to establish the 'port' and the 'IP' of the server II, which is going to send the information to the platform (client II). This is set in 'servidor_broadcast.py' code:
 
 ```bash
-PORT = 8000
-...
-async def echo(websocket, path):
-    ...
-    start_server = websockets.serve(echo, "10.236.25.41", PORT)
-    ...
+   start_server = websockets.serve(echo, IP_TX, PORT_SB)
 ```
 </details>
+
+<details>
+<summary>config.ini</summary>
+
+The “config.ini” file is in charge of configuring the necessary specifications of “IP”, “port”, among others, which will be required at the time of the video transmission in real-time and the alert.
+```bash
+; config.ini
+[DEFAULT]
+PORT_RX= 8554
+PORT_TX= 8650
+IP_TX= 192.168.100.74
+PORT_SB= 8000
+```
+</details> 
 
 For a better understanding of the architecture, see the following figure
 
 <div align="center">
   <p>
     <a align="center">
-      <img width="850" src="https://github.com/pablomuo/prueba/blob/main/architecture%20(1).png"></a>
+      <img width="850" src="https://github.com/pablomuo/yolov5_object_detection/blob/main/utils/Architecture.png"></a>
 </div>
 
 ```bash
+
 #Execute
 python ejecutar.py
 ```
