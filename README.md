@@ -298,7 +298,6 @@ Once everything is ready, inside the docker terminal the file 'ejecutar.py' must
 python ejecutar.py
 ```
 
-Translated with www.DeepL.com/Translator (free version)
 
 
 ## <div align="center">Contribute</div>
