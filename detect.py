@@ -123,6 +123,7 @@ async def run(
     config = configparser.ConfigParser()
     config.read('config.ini')
     IP_TX = config['DEFAULT']['IP_TX']
+    IP_SB = config['DEFAULT']['IP_SB']
     PORT_TX = config['DEFAULT']['PORT_TX']
     PORT_SB = config['DEFAULT']['PORT_SB']
     CONF_MIN = float(config['DEFAULT']['CONF_MIN'])
@@ -137,7 +138,7 @@ async def run(
     out_send = cv2.VideoWriter(gst_str_rtp, fourcc, 20, (1280, 720), True)  #out_send = cv2.VideoWriter(gst_str_rtp, fourcc, fps, (frame_width, frame_height), True) 
 
     #send infor (text) via WebSocket to the Servidor_Broadcast and then to the platform 
-    HOST_PORT = (f'ws://{IP_TX}:{PORT_SB}')   
+    HOST_PORT = (f'ws://{IP_SB}:{PORT_SB}')   
 
     #------------------------------------------------------------------------------------------------------------------------------------------------    #creamos vectores para almacenar la informacion
     final_class = [0]*26                                                                                           #se usa para llevar una cuenta de cuantos frames seguidos lleva viendo cada clase 

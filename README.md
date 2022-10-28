@@ -179,7 +179,7 @@ For running the pre-trained model, the weights "weights.pt" must be used in the 
 python detect.py --weights weights.pt --source 0
 ```
 
-## <div align="center">Modifications to use Gsstreamer and WebSocket</div>
+## <div align="center">Modifications to use Gstreamer and WebSocket</div>
 <details>
 <summary>Transmit with Gstreamer from AGV to Yolov5</summary>
 
@@ -269,7 +269,7 @@ For a better understanding of the architecture, see the following figure
 
 ```bash
 
-#Execute
+#To run the full yolov5 algorithm
 python ejecutar.py
 ```
 
@@ -321,4 +321,4 @@ professional support requests please visit [https://ultralytics.com/contact](htt
 
 [assets]: https://github.com/ultralytics/yolov5/releases
 [tta]: https://github.com/ultralytics/yolov5/issues/303
-# yolov5_object_detection
+
