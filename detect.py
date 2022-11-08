@@ -122,12 +122,12 @@ async def run(
     # To read the data infor of the client (IP, PORT)
     config = configparser.ConfigParser()
     config.read('config.ini')
-    IP_TX = config['DEFAULT']['IP_TX']
-    IP_SB = config['DEFAULT']['IP_SB']
-    PORT_TX = config['DEFAULT']['PORT_TX']
-    PORT_SB = config['DEFAULT']['PORT_SB']
-    CONF_MIN = float(config['DEFAULT']['CONF_MIN'])
-    AREA_MIN = float(config['DEFAULT']['AREA_MIN'])
+    IP_TX = config['DEFAULT']['ip_tx']
+    IP_SB = config['DEFAULT']['ip_sb']
+    PORT_TX = config['DEFAULT']['port_tx']
+    PORT_SB = config['DEFAULT']['port_sb']
+    CONF_MIN = float(config['DEFAULT']['conf_min'])
+    #AREA_MIN = float(config['DEFAULT']['AREA_MIN'])
 
     #send the stream to the client via GStreamer
     gst_str_rtp =(f'appsrc ! videoconvert ! videoscale ! video/x-raw,format=I420,width=1280,height=720,framerate=20/1 !  videoconvert !\

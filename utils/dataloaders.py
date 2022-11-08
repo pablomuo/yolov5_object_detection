@@ -309,7 +309,7 @@ class LoadStreams:
         #----------------------------------------------------------
         config = configparser.ConfigParser()
         config.read('config.ini')
-        PORT_RX = config['DEFAULT']['PORT_RX']
+        PORT_RX = config['DEFAULT']['port_rx']
         #----------------------------------------------------------
 
         if os.path.isfile(sources):

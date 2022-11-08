@@ -6,13 +6,15 @@ import asyncio
 
 import configparser
 import time
-
+import sys
 #----------------------------------------------------------
 config = configparser.ConfigParser()
 config.read('config.ini')
-IP_SB = config['DEFAULT']['IP_SB']
-PORT_SB = config['DEFAULT']['PORT_SB']
+IP_SB = config['DEFAULT']['ip_sb']
+PORT_SB = config['DEFAULT']['port_sb']
 #----------------------------------------------------------
+
+
 connected = set()
 async def echo(websocket, path):
     connected.add(websocket)
