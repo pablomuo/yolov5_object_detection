@@ -6,6 +6,7 @@
 FROM nvcr.io/nvidia/pytorch:22.05-py3
 
 ARG IP_TX
+ARG IP_SB
 ARG PORT_TX
 ARG PORT_RX
 ARG PORT_SB
@@ -109,6 +110,5 @@ RUN git clone https://github.com/pablomuo/yolov5_object_detection /usr/src/yolov
 # Set environment variables
 ENV OMP_NUM_THREADS=8
 
-CMD python ejecutar.py ${IP_TX} ${PORT_TX} ${PORT_RX} ${PORT_SB} ${CONF_MIN}
-
+CMD python ejecutar.py ${IP_TX} ${IP_SB} ${PORT_TX} ${PORT_RX} ${PORT_SB} ${CONF_MIN}
 

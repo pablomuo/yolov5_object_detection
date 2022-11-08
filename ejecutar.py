@@ -6,16 +6,17 @@ import configparser
 # se reciben las ip y los puertos
 arguments = sys.argv
 IP_TX = arguments[1]
-PORT_TX = arguments[2]
-PORT_RX = arguments[3]
-PORT_SB = arguments[4]
-CONF_MIN = arguments[5]
+IP_SB = arguments[2]
+PORT_TX = arguments[3]
+PORT_RX = arguments[4]
+PORT_SB = arguments[5]
+CONF_MIN = arguments[6]
 
 
 # se crea el archivo config.ini
 config = configparser.ConfigParser()
 config['DEFAULT'] = {'IP_TX': IP_TX,
-		     'IP_SB': IP_TX,
+		     'IP_SB': IP_SB,
                      'PORT_TX': PORT_TX,
                      'PORT_RX': PORT_RX,
 		     'PORT_SB': PORT_SB,
