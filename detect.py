@@ -276,9 +276,9 @@ async def run(
                             if all_data[i3][0:2] == num:        
                                 msg_class = all_data[i3]
                                 break
-                        #print(msg_class)
-                        if len(all_data) != 0:
-                            await enviar(msg_class, HOST_PORT)
+                        
+                        # if len(all_data) != 0:
+                        #     await enviar(msg_class, HOST_PORT)
 
                         for i4 in range(len(final_class)):
                             if final_class[i4] >= 5:
@@ -292,7 +292,7 @@ async def run(
         
                 sum_data = sum(final_class)                                                                         #Este mensaje se enviara cuando este detectando clases, sin embargo, no se cumpla los requisitos del filtro(area-peso), por lo que no se tomaran en cuenta, para reestablecer el contador de la plataforma
                 if sum_data == 0:
-                    msg_empty = f"98 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 "
+                    msg_empty = f"99"
                     await enviar(msg_empty, HOST_PORT)
 
             ##-------------------------------------------------------------------------------------------------------------------------------------------   #send msg if it is nothing in the streaming e inicializa los valores de conteo si pasan mas de dos frames seguidos sin ver las clases
