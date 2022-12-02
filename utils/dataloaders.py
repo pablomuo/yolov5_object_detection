@@ -334,7 +334,7 @@ class LoadStreams:
                 assert not is_colab(), '--source 0 webcam unsupported on Colab. Rerun command in a local environment.'
                 assert not is_kaggle(), '--source 0 webcam unsupported on Kaggle. Rerun command in a local environment.'
             
-            #cap = cv2.VideoCapture(s)
+            # cap = cv2.VideoCapture(s)
 
             gstreamer_str = (f'udpsrc port={PORT_RX} auto-multicast=0 ! application/x-rtp, media=video, encoding-name=H264 ! rtpjitterbuffer latency=300 ! rtph264depay ! decodebin ! videoconvert ! video/x-raw,format=BGR ! appsink drop=1')
             cap = cv2.VideoCapture(gstreamer_str, cv2.CAP_GSTREAMER)

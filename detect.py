@@ -191,7 +191,9 @@ async def run(
             imc = im0.copy() if save_crop else im0  # for save_crop
             annotator = Annotator(im0, line_width=line_thickness, example=str(names))
 
+            time_det = time.time_ns()
             if len(det):
+                
                 # Rescale boxes from img_size to im0 size
                 det[:, :4] = scale_coords(im.shape[2:], det[:, :4], im0.shape).round()
                 #------------------------------------------------------------------------------------------------------------------------------------------- creacion de listas que almacenan la infor de: 
@@ -241,7 +243,8 @@ async def run(
                             if (det[d, 4] >= CONF_MIN):                                                             #si se tiene en cuenta una confianza mínima 
                                 annotator.box_label(xyxy, label, color=colors(c, True))  
                                 ms = f'{c:02d} {det[d, 4]:.4f} {det[d, 0]} {det[d, 1]} {det[d, 2]} {det[d, 3]} '    #estio sera lo que se imprima en el txt, de cada observacion
-                                print(ms)
+                                # print(ms)
+                                save_data_text_old_version(ms)
                                 msg_para_enviar = f'{c:02d} {det[d, 4]:.4f} {area1[d]}'                             #msg_para_enviar = f'{n:02d} {c:02d} {det[d, 4]:.4f} {area1[d]}'
                                 all_data.append(msg_para_enviar)
                         d = d-1                                                                                     #se resta porque va desde el final de det hasta el principio (porque va desde los valores con menos confianza a los que más, justo lo contrario que det, que su primer valor es la detección con más confianza)
@@ -287,13 +290,19 @@ async def run(
                         b = [x*y for x,y in zip(final_num,v_uni)]                                                   #para multiplicar dos listas --> y ver si enviamos infor
                         msg_total = f"98 {b[0]:02d} {b[1]:02d} {b[2]:02d} {b[3]:02d} {b[4]:02d} {b[5]:02d} {b[6]:02d} {b[7]:02d} {b[8]:02d} {b[9]:02d} {b[10]:02d} {b[11]:02d} {b[12]:02d} {b[13]:02d} {b[14]:02d} {b[15]:02d} {b[16]:02d} {b[17]:02d} {b[18]:02d} {b[19]:02d} {b[20]:02d} {b[21]:02d} {b[22]:02d} {b[23]:02d} {b[24]:02d} {b[25]:02d}"
                         print(msg_total)
-                        await enviar(msg_total, HOST_PORT)
+                        await enviar(msg_total, HOST_PORT)                       
                         v_uni = [0]*26
+
+                        save_data_text(msg_total)
+                    
         
                 sum_data = sum(final_class)                                                                         #Este mensaje se enviara cuando este detectando clases, sin embargo, no se cumpla los requisitos del filtro(area-peso), por lo que no se tomaran en cuenta, para reestablecer el contador de la plataforma
                 if sum_data == 0:
                     msg_empty = f"99"
                     await enviar(msg_empty, HOST_PORT)
+                    
+                    save_data_text(msg_empty)
+
 
             ##-------------------------------------------------------------------------------------------------------------------------------------------   #send msg if it is nothing in the streaming e inicializa los valores de conteo si pasan mas de dos frames seguidos sin ver las clases
             else: 
@@ -306,8 +315,15 @@ async def run(
                         all_ima[i5] = 0
                 msg_para_enviar = f'99'
                 await enviar(msg_para_enviar, HOST_PORT)
+                
+                save_data_text(msg_para_enviar)
             ##-------------------------------------------------------------------------------------------------------------------------------------------
-
+            
+            time_final = time.time_ns()
+            # print(time_final)
+            dif_time_total = (time_final-time_det)/1000000          # para tenerlo en ms
+            # print("dif_time_total", dif_time_total)
+            save_data(len(det),dif_time_total)
             # Stream results
             ##-------------------------------------------------------------------------------------------------------------------------------------------#send infor via gstreamer
             im0 = annotator.result()
@@ -393,6 +409,47 @@ async def main():
     opt = parse_opt()
     await run(**vars(opt))
 
+def save_data(detections,lat):
+    m, s = divmod(int(time.time() - start_time), 60)
+    h, m = divmod(m, 60)
+    if not os.path.exists("_results_latency.txt"):
+        with open("_results_latency.txt", 'a') as outfile:
+            # outfile.write("dif_time_class".rjust(8," ")\
+            outfile.write("Detections".rjust(8," ")+ "   "+"Latency".rjust(8," ")\
+            +"\n")
+    with open("_results_latency.txt", 'a') as outfile:
+        # outfile.write("{:8f}".format(x)\
+        outfile.write(str(detections)+"   "+"{:08f}".format(lat)\
+        +"   "+"\n")
+
+def save_data_text(x):
+    m, s = divmod(int(time.time() - start_time), 60)
+    h, m = divmod(m, 60)
+    if not os.path.exists("_results_text.txt"):
+        with open("_results_text.txt", 'a') as outfile:
+            outfile.write("Output".rjust(8," ")\
+            # outfile.write("dif_time_class".rjust(8," ")+ "   "+"dif_time_total".rjust(8," ")\
+            +"\n")
+    with open("_results_text.txt", 'a') as outfile:
+        outfile.write(x\
+        # outfile.write("{:08f}".format(x)+"   "+"{:08f}".format(y)\
+        +"   "+"\n")
+
+def save_data_text_old_version(x):
+    m, s = divmod(int(time.time() - start_time), 60)
+    h, m = divmod(m, 60)
+    if not os.path.exists("_results_text_old_version.txt"):
+        with open("_results_text_old_version.txt", 'a') as outfile:
+            outfile.write("Output_old_version".rjust(8," ")\
+            # outfile.write("dif_time_class".rjust(8," ")+ "   "+"dif_time_total".rjust(8," ")\
+            +"\n")
+    with open("_results_text_old_version.txt", 'a') as outfile:
+        outfile.write(x\
+        # outfile.write("{:08f}".format(x)+"   "+"{:08f}".format(y)\
+        +"   "+"\n")
+
+
 if __name__ == "__main__":
+    start_time         = time.time()
     check_requirements(exclude=('tensorboard', 'thop'))
     asyncio.run(main())
