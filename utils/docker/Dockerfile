@@ -110,5 +110,5 @@ RUN git clone https://github.com/pablomuo/yolov5_object_detection /usr/src/yolov
 # Set environment variables
 ENV OMP_NUM_THREADS=8
 
-CMD python ejecutar.py ${IP_TX} ${IP_SB} ${PORT_TX} ${PORT_RX} ${PORT_SB} ${CONF_MIN}
+#CMD python ejecutar.py ${IP_TX} ${IP_SB} ${PORT_TX} ${PORT_RX} ${PORT_SB} ${CONF_MIN}
 
